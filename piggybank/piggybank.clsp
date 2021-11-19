@@ -8,11 +8,17 @@
     (defconstant TARGET_AMOUNT 500)
     (defconstant CASH_OUT_PUZZLE_HASH)
 
+    (defun-inline recreate_self (my_amount new_amount my_puzzlehash)
+        (list
+            (list )
+        )
+    )
+
     ; main -- if the new amount is greater than my amount
     (if (> new_amount my_amount)
         (if ( > new_amount TARGET_AMOUNT)
         ;cash_out
-        ;recreate self
+        (recreate_self my_amount new_amount my_puzzlehash)
         )
         (x)
     )
