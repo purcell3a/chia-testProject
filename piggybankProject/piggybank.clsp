@@ -1,0 +1,69 @@
+(mod (
+
+    ; defining arguments
+        TARGET_AMOUNT
+        CASH_OUT_PUZZLE_HASH
+        my_amount
+        new_amount
+        my_puzzlehash
+    )
+
+    ;run and brun don't know about this so make sure you include the file path
+    (include condition_codes.clib)
+
+    (defconstant TARGET_AMOUNT 500)
+    (defconstant CASH_OUT_PUZZLE_HASH)
+
+    (defun_inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+        (list
+            ;create new coint with new amount and puzzle hash
+            (list CREATE_COIN CASH_OUT_PUZZLE_HASH new_amount)
+            ; recreate new piggybank with amount 0 == this will have the same target amount because it has the same puzzle hash
+            (list CREATE_COIN my_puzzlehash 0)
+            ; assert values to prevent anyone else from tampering with our $$
+            (list ASSERT_MY_AMOUNT my_amount)
+            (list ASSERT_MY_PUZZLEHASH my_puzzlehash)
+            ; this doesn't do anything on it's own, it just allows us to assert this announcment on other spends
+            ; essentially is someone wants to send 50 mojo, this will ensure this deposit only happens if the new amount is 50 mojo greater
+            (list CREATE_COIN_ANNOUNCEMENT new_amount)
+        )
+    )
+    )
+
+    (defun-inline recreate_self (my_amount new_amount my_puzzlehash)
+        (list
+            (list CREATE_COIN my_puzzlehash new_amount)
+        )
+    )
+
+    ; main -- if the new amount is greater than my amount
+     (if (> new_amount my_amount)
+       (if (> new_amount TARGET_AMOUNT)
+        (cash_out CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+        (recreate_self my_amount new_amount my_puzzlehash)
+       )
+       (x)
+     )
+
+)
+
+
+
+    ; (defun-inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+    ;   (list
+    ;     (list CREATE_COIN CASH_OUT_PUZZLE_HASH new_amount)
+    ;     (list CREATE_COIN my_puzzlehash 0)
+    ;     (list ASSERT_MY_AMOUNT my_amount)
+    ;     (list ASSERT_MY_PUZZLEHASH my_puzzlehash)
+    ;     (list CREATE_COIN_ANNOUNCEMENT new_amount)
+    ;   )
+    ;  )
+
+    ;  (defun-inline recreate_self (my_amount new_amount my_puzzlehash)
+    ;   (list
+    ;     (list CREATE_COIN my_puzzlehash new_amount)
+    ;     (list ASSERT_MY_AMOUNT my_amount)
+    ;     (list ASSERT_MY_PUZZLEHASH my_puzzlehash)
+    ;     (list CREATE_COIN_ANNOUNCEMENT new_amount)
+    ;   )
+    ;  )
