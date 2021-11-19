@@ -1,8 +1,10 @@
 (mod (
 
-    ; defining arguments
+    ; defining arguments....capitals mean our amounts (constants) and lower case means things other people can manipulate (non constants)
         TARGET_AMOUNT
         CASH_OUT_PUZZLE_HASH
+        INNER_PUZZLE
+        inner_solution
         my_amount
         new_amount
         my_puzzlehash
@@ -12,10 +14,12 @@
     (include condition_codes.clib)
 
     (defconstant TARGET_AMOUNT 500)
-    (defconstant CASH_OUT_PUZZLE_HASH)
+    (defconstant CASH_OUT_PUZZLE_HASH 0xcafe00d)
 
-    (defun_inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+    (defun-inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
         (list
+            ; any conditions that come out of the inner puzzle will get added onto the conditions of the outer puzzle
+            (c (a INNER_PUZZLE inner_solution))
             ;create new coint with new amount and puzzle hash
             (list CREATE_COIN CASH_OUT_PUZZLE_HASH new_amount)
             ; recreate new piggybank with amount 0 == this will have the same target amount because it has the same puzzle hash
@@ -27,7 +31,6 @@
             ; essentially is someone wants to send 50 mojo, this will ensure this deposit only happens if the new amount is 50 mojo greater
             (list CREATE_COIN_ANNOUNCEMENT new_amount)
         )
-    )
     )
 
     (defun-inline recreate_self (my_amount new_amount my_puzzlehash)

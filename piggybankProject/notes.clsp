@@ -1,0 +1,6 @@
+; In CLVM 1 means entire solution
+( a (some puzzle) (c TARGET_AMOUNT (c CASH_OUT_PUZZLE_HASH 1)))
+; we'll make a hash of what's above us which is basically the puzzle with some meta data 
+; it's allowing us to include the solution with our puzzle
+
+; this is for currying
