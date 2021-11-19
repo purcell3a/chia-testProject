@@ -5,19 +5,32 @@
         my_puzzlehash
     )
 
+    ;run and brun don't know about this so make sure you include the file path
+    (include condition_codes.clib)
+
     (defconstant TARGET_AMOUNT 500)
     (defconstant CASH_OUT_PUZZLE_HASH)
 
+    (defun_inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+        (list
+            ;create new coint with new amount and puzzle hash
+            (list CREATE_COIN CASH_OUT_PUZZLE_HASH new_amount)
+            ; recreate new piggybank with amount 0 == this will have the same target amount because it has the same puzzle hash
+            (list CREATE_COIN my_puzzlehash 0)
+        )
+    )
+    )
+
     (defun-inline recreate_self (my_amount new_amount my_puzzlehash)
         (list
-            (list )
+            (list CREATE_COIN my_puzzlehash new_amount)
         )
     )
 
     ; main -- if the new amount is greater than my amount
     (if (> new_amount my_amount)
         (if ( > new_amount TARGET_AMOUNT)
-        ;cash_out
+        (cash_out CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
         (recreate_self my_amount new_amount my_puzzlehash)
         )
         (x)
